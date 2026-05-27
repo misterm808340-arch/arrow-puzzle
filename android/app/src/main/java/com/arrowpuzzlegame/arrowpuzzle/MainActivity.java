@@ -1,4 +1,4 @@
-package com.arrowpuzzle.game;
+package com.arrowpuzzlegame.arrowpuzzle;
 
 import com.getcapacitor.BridgeActivity;
 
