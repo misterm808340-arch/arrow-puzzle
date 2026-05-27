@@ -11,8 +11,20 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: "Arrow Puzzle - Logic Puzzle Game",
   description: "A relaxing logic puzzle game. Clear arrows by tapping them in the correct order!",
+  manifest: "/manifest.json",
   icons: {
     icon: "/game-icon.png",
+    apple: "/icons/icon-512.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Arrow Puzzle",
+  },
+  openGraph: {
+    title: "Arrow Puzzle",
+    description: "Clear the arrows. Think ahead.",
+    images: ["/game-icon.png"],
   },
 };
 
@@ -31,6 +43,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="application-name" content="Arrow Puzzle" />
+      </head>
       <body
         className={`${geistSans.variable} antialiased bg-background text-foreground`}
         style={{ overscrollBehavior: 'none', overflow: 'hidden' }}

@@ -1,0 +1,21 @@
+{
+  "name": "Arrow Puzzle",
+  "short_name": "Arrow Puzzle",
+  "description": "A relaxing logic puzzle game. Clear arrows by tapping them in the correct order!",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E8EAF6",
+  "theme_color": "#4A90D9",
+  "icons": [
+    {
+      "src": "/game-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "puzzle"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
