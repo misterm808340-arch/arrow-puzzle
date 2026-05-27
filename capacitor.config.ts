@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.arrowpuzzlegame.arrowpuzzle',
+  appId: 'com.arrowpuzzlegame.arrowpuzzlefree',
   appName: 'Arrow Puzzle',
   webDir: 'out',
   server: {

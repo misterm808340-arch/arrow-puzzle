@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.arrowpuzzlegame.arrowpuzzle"
+    namespace = "com.arrowpuzzlegame.arrowpuzzlefree"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.arrowpuzzlegame.arrowpuzzle"
+        applicationId "com.arrowpuzzlegame.arrowpuzzlefree"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

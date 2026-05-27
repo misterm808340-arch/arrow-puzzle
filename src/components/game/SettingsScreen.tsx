@@ -177,7 +177,7 @@ export default function SettingsScreen() {
           {/* App info */}
           <div className="pt-6 text-center">
             <p className="text-sm text-gray-400">Arrow Puzzle v1.0.0</p>
-            <p className="text-xs text-gray-300 mt-1">com.arrowpuzzlegame.arrowpuzzle</p>
+            <p className="text-xs text-gray-300 mt-1">com.arrowpuzzlegame.arrowpuzzlefree</p>
           </div>
         </div>
       </div>
