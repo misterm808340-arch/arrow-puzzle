@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '@/game/store';
 import { loadDailyCompleted } from '@/game/storage';
 import { Play, CalendarDays, Settings, Star } from 'lucide-react';
+import AdBanner from './AdBanner';
 
 export default function HomeScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -163,11 +164,9 @@ export default function HomeScreen() {
         <span className="font-semibold text-lg">{totalStars} Stars Collected</span>
       </motion.div>
 
-      {/* Ad placeholder */}
+      {/* Banner Ad */}
       <div className="mt-6 w-full max-w-xs">
-        <div className="bg-gray-100 rounded-xl py-3 px-4 text-center text-xs text-gray-400 border border-dashed border-gray-300">
-          AdMob Banner Placeholder
-        </div>
+        <AdBanner />
       </div>
     </div>
   );

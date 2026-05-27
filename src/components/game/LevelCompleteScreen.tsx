@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '@/game/store';
 import { Star, ArrowRight, RotateCcw, Trophy } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import AdBanner from './AdBanner';
 
 export default function LevelCompleteScreen() {
   const currentLevel = useGameStore((s) => s.currentLevel);
@@ -141,11 +142,9 @@ export default function LevelCompleteScreen() {
         </motion.button>
       </motion.div>
 
-      {/* Ad placeholder */}
+      {/* Banner Ad */}
       <div className="mt-8 w-full max-w-xs">
-        <div className="bg-gray-100 rounded-xl py-3 px-4 text-center text-xs text-gray-400 border border-dashed border-gray-300">
-          AdMob Banner Placeholder
-        </div>
+        <AdBanner />
       </div>
     </div>
   );

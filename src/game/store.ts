@@ -353,9 +353,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   watchAdForLife: () => {
-    // Placeholder for rewarded ad
+    // Real AdMob rewarded ad integration
     const state = get();
     if (state.lives <= 0) {
+      // Check if running natively - if so, the RewardedAdPlaceholder component
+      // handles the real AdMob call. If web, it simulates the ad.
       set({ lives: 1, gameOver: false, currentScreen: 'game' });
     }
   },

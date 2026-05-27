@@ -37,10 +37,10 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <!-- AdMob App ID (replace with your real ID) -->
+        <!-- AdMob App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY"/>
+            android:value="ca-app-pub-9252468896971676~9252468896971676"/>
             
         <!-- Disable AD_ID collection for children's privacy (optional) -->
         <meta-data

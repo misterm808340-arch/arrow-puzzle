@@ -162,17 +162,17 @@ export default function SettingsScreen() {
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.25 }}
-            className="bg-gray-50 rounded-2xl p-4 border border-dashed border-gray-200"
+            className="bg-green-50 rounded-2xl p-4 border border-green-200"
           >
-            <h4 className="font-semibold text-gray-600 mb-2">AdMob Integration</h4>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              This is a placeholder for AdMob integration. In production, integrate:
+            <h4 className="font-semibold text-green-700 mb-2">AdMob Active</h4>
+            <p className="text-sm text-green-600 leading-relaxed">
+              AdMob ads are integrated and active:
             </p>
-            <ul className="text-sm text-gray-500 mt-2 space-y-1">
-              <li>• Banner ads at the bottom of game screen</li>
+            <ul className="text-sm text-green-600 mt-2 space-y-1">
+              <li>• Banner ads at bottom of game screen</li>
               <li>• Interstitial ads between every 3rd level</li>
               <li>• Rewarded video ads for extra lives</li>
-              <li>• Remove Ads in-app purchase</li>
+              <li>• Toggle above to remove all ads</li>
             </ul>
           </motion.div>
 
