@@ -17,9 +17,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
-        <item name="android:background">@drawable/splash</item>
-        <item name="windowSplashScreenBackground">#4A90D9</item>
-        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 </resources>

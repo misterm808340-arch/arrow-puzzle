@@ -5,8 +5,6 @@ const config: CapacitorConfig = {
   appName: 'Arrow Puzzle',
   webDir: 'out',
   server: {
-    // For development: point to your local dev server
-    // url: 'http://localhost:3000',
     androidScheme: 'https',
   },
   plugins: {
