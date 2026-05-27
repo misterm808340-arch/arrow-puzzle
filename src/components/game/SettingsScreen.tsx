@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/game/store';
-import { ArrowLeft, Volume2, VolumeX, Music, Smartphone, XCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, Music, Smartphone, Shield, ExternalLink } from 'lucide-react';
 
 export default function SettingsScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -122,64 +122,62 @@ export default function SettingsScreen() {
 
           {/* Divider */}
           <div className="pt-4 pb-2">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Monetization</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Ads</h3>
           </div>
 
-          {/* Remove Ads */}
+          {/* AdMob Info - transparent about ad usage (Play Store policy requirement) */}
           <motion.div
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between"
+            className="bg-blue-50 rounded-2xl p-4 border border-blue-200"
           >
-            <div className="flex items-center gap-3">
-              {settings.removeAds ? (
-                <CheckCircle size={22} className="text-green-500" />
-              ) : (
-                <XCircle size={22} className="text-red-400" />
-              )}
-              <div>
-                <p className="font-semibold text-gray-800">Remove Ads</p>
-                <p className="text-sm text-gray-500">Purchase to remove all ads</p>
-              </div>
+            <div className="flex items-center gap-2 mb-2">
+              <Shield size={18} className="text-blue-600" />
+              <h4 className="font-semibold text-blue-700">About Ads</h4>
             </div>
-            <button
-              onClick={() => updateSettings({ removeAds: !settings.removeAds })}
-              className={`w-12 h-7 rounded-full transition-colors relative ${
-                settings.removeAds ? 'bg-green-500' : 'bg-gray-300'
-              }`}
-            >
-              <motion.div
-                className="w-5 h-5 bg-white rounded-full absolute top-1 shadow-sm"
-                animate={{ left: settings.removeAds ? '24px' : '4px' }}
-                transition={{ type: 'spring', damping: 15, stiffness: 300 }}
-              />
-            </button>
+            <p className="text-sm text-blue-600 leading-relaxed">
+              This app uses Google AdMob to show ads:
+            </p>
+            <ul className="text-sm text-blue-600 mt-2 space-y-1">
+              <li>• Banner ads at the bottom of screens</li>
+              <li>• Interstitial ads between every 3rd level</li>
+              <li>• Rewarded video ads for extra lives</li>
+            </ul>
+            <p className="text-xs text-blue-400 mt-3">
+              Ads help keep this game free. AdMob may collect device info for ad personalization.
+            </p>
           </motion.div>
 
-          {/* AdMob Info */}
-          <motion.div
+          {/* Divider */}
+          <div className="pt-4 pb-2">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Legal</h3>
+          </div>
+
+          {/* Privacy Policy - REQUIRED by Google Play for apps with ads */}
+          <motion.a
+            href="https://arrow-puzzle-privacy.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.25 }}
-            className="bg-green-50 rounded-2xl p-4 border border-green-200"
+            className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer active:bg-gray-50"
           >
-            <h4 className="font-semibold text-green-700 mb-2">AdMob Active</h4>
-            <p className="text-sm text-green-600 leading-relaxed">
-              AdMob ads are integrated and active:
-            </p>
-            <ul className="text-sm text-green-600 mt-2 space-y-1">
-              <li>• Banner ads at bottom of game screen</li>
-              <li>• Interstitial ads between every 3rd level</li>
-              <li>• Rewarded video ads for extra lives</li>
-              <li>• Toggle above to remove all ads</li>
-            </ul>
-          </motion.div>
+            <div className="flex items-center gap-3">
+              <Shield size={22} className="text-green-600" />
+              <div>
+                <p className="font-semibold text-gray-800">Privacy Policy</p>
+                <p className="text-sm text-gray-500">How we handle your data</p>
+              </div>
+            </div>
+            <ExternalLink size={18} className="text-gray-400" />
+          </motion.a>
 
           {/* App info */}
           <div className="pt-6 text-center">
-            <p className="text-sm text-gray-400">Arrow Puzzle v1.0</p>
-            <p className="text-xs text-gray-300 mt-1">Made with ❤️</p>
+            <p className="text-sm text-gray-400">Arrow Puzzle v1.0.0</p>
+            <p className="text-xs text-gray-300 mt-1">com.arrowpuzzlegame.arrowpuzzle</p>
           </div>
         </div>
       </div>

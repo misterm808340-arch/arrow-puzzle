@@ -50,5 +50,10 @@ test
 prompt
 
 server.log
+
+# Keystore files - NEVER commit to version control
+*.jks
+*.keystore
+
 # Skills directory
 /skills/

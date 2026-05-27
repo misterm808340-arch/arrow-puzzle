@@ -17,10 +17,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('../../arrow-puzzle-keystore.jks')
-            storePassword 'ArrowPuzzle2024!'
-            keyAlias 'arrow-puzzle'
-            keyPassword 'ArrowPuzzle2024!'
+            storeFile file(System.getenv("KEYSTORE_FILE") ?: '../../arrow-puzzle-keystore.jks')
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: 'ArrowPuzzle2024!'
+            keyAlias System.getenv("KEY_ALIAS") ?: 'arrow-puzzle'
+            keyPassword System.getenv("KEY_PASSWORD") ?: 'ArrowPuzzle2024!'
         }
     }
 

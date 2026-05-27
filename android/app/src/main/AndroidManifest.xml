@@ -8,7 +8,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
 
         <activity
@@ -42,10 +41,10 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9252468896971676~9252468896971676"/>
             
-        <!-- Disable AD_ID collection for children's privacy (optional) -->
+        <!-- Disable advertising ID collection for privacy compliance -->
         <meta-data
             android:name="com.google.android.gms.ads.AD_ID_COLLECTION"
-            android:value="true"/>
+            android:value="false"/>
     </application>
 
     <!-- Permissions -->
