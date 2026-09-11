@@ -1,4 +1,4 @@
-# Arrow Puzzle — v1.9.1 (Google AdMob)
+# Arrow Puzzle — v1.9.2 (Google AdMob)
 
 ## Contents
 
@@ -23,8 +23,8 @@ arrow-puzzle/
 ├── public/                      # Static web assets
 ├── prisma/                      # Database schema
 ├── download/                    # Build artifacts
-│   ├── arrow-puzzle-v1.9.1.apk           # Direct install
-│   ├── arrow-puzzle-v1.9.1.aab           # Play Store upload
+│   ├── arrow-puzzle-v1.9.2.apk           # Direct install
+│   ├── arrow-puzzle-v1.9.2.aab           # Play Store upload
 │   ├── arrow-puzzle-keystore.jks          # Signing keystore (KEEP SECRET!)
 │   ├── KEYSTORE-DETAILS.txt               # Keystore credentials
 │   └── *.png                              # App icons
@@ -55,7 +55,7 @@ arrow-puzzle/
 ## Install APK directly
 
 ```bash
-adb install download/arrow-puzzle-v1.9.1.apk
+adb install download/arrow-puzzle-v1.9.2.apk
 ```
 
 ## Rebuild from source
@@ -76,7 +76,7 @@ cd android && ./gradlew assembleRelease bundleRelease
 
 ## Play Store upload
 
-Upload `download/arrow-puzzle-v1.9.1.aab` to Play Console. The Data Safety
+Upload `download/arrow-puzzle-v1.9.2.aab` to Play Console. The Data Safety
 form must disclose that the app uses advertising — declare the AdMob SDK's
 advertising ID, crash analytics, and (if applicable) performance data
 collection.

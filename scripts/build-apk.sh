@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build production APK + AAB (Google AdMob since v1.9.1)
+# Build production APK + AAB (Google AdMob since v1.9.2)
 set -e
 
 # Use bundled JDK + Android SDK (no system tools available)
@@ -36,25 +36,25 @@ echo ""
 echo "=== [5/5] Copy APK + AAB to download/ ==="
 cd /home/z/my-project
 cp android/app/build/outputs/apk/release/app-release.apk \
-   download/arrow-puzzle-v1.9.1.apk
+   download/arrow-puzzle-v1.9.2.apk
 cp android/app/build/outputs/bundle/release/app-release.aab \
-   download/arrow-puzzle-v1.9.1.aab
-ls -lh download/arrow-puzzle-v1.9.1.apk download/arrow-puzzle-v1.9.1.aab
+   download/arrow-puzzle-v1.9.2.aab
+ls -lh download/arrow-puzzle-v1.9.2.apk download/arrow-puzzle-v1.9.2.aab
 
 echo ""
 echo "=== Verifying APK ==="
-aapt dump badging download/arrow-puzzle-v1.9.1.apk | grep -E "package:|versionCode|versionName|application-label:" | head -5
+aapt dump badging download/arrow-puzzle-v1.9.2.apk | grep -E "package:|versionCode|versionName|application-label:" | head -5
 
 echo ""
 echo "=== Signing verification ==="
-apksigner verify --verbose download/arrow-puzzle-v1.9.1.apk 2>&1 | head -8
+apksigner verify --verbose download/arrow-puzzle-v1.9.2.apk 2>&1 | head -8
 
 echo ""
 echo "=== Sanity: AdMob + UMP classes present in APK? ==="
-unzip -l download/arrow-puzzle-v1.9.1.apk | grep -E "com/google/android/gms/ads|com/google/android/ump" | head -5 || echo "(none found — check Gradle resolution)"
+unzip -l download/arrow-puzzle-v1.9.2.apk | grep -E "com/google/android/gms/ads|com/google/android/ump" | head -5 || echo "(none found — check Gradle resolution)"
 
 echo ""
 echo "=== DONE ==="
-echo "APK:  /home/z/my-project/download/arrow-puzzle-v1.9.1.apk"
-echo "AAB:  /home/z/my-project/download/arrow-puzzle-v1.9.1.aab"
+echo "APK:  /home/z/my-project/download/arrow-puzzle-v1.9.2.apk"
+echo "AAB:  /home/z/my-project/download/arrow-puzzle-v1.9.2.aab"
 

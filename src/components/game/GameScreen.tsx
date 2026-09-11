@@ -29,13 +29,22 @@ export default function GameScreen() {
 
   const [showConfetti, setShowConfetti] = useState(false);
 
-  // Calculate cell size based on viewport
+  // Calculate cell size based on viewport — responds to orientation/resize
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 400
+  );
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const cellSize = useMemo(() => {
-    if (typeof window === 'undefined') return 60;
-    const maxWidth = Math.min(window.innerWidth - 32, 400);
+    const maxWidth = Math.min(viewportWidth - 32, 400);
     const gap = 4;
     return Math.floor((maxWidth - (gridSize - 1) * gap) / gridSize);
-  }, [gridSize]);
+  }, [gridSize, viewportWidth]);
 
   // Show confetti on level complete
   useEffect(() => {

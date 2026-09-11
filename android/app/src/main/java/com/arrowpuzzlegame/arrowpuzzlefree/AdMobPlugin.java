@@ -85,10 +85,12 @@ public class AdMobPlugin extends Plugin {
     private boolean interstitialReady = false;
     private boolean rewardedReady = false;
     private boolean bannerShowing = false;
+    private boolean zOrderFixApplied = false; // cached — only run the expensive fix once
 
     private InterstitialAd interstitialAd;
     private RewardedAd rewardedAd;
     private AdView bannerView;
+    private android.webkit.WebView cachedWebView = null; // cached reference
 
     // =====================================================================
     // Logging helpers — forward to JS via admob_log event
@@ -531,6 +533,10 @@ public class AdMobPlugin extends Plugin {
             call.reject("AdMob not initialized");
             return;
         }
+        // PERFORMANCE: if banner is already showing, return immediately.
+        // Previously this created a NEW AdView on every call, ran the
+        // expensive recursive WebView search, set transparent background,
+        // forced requestLayout() — all of which tanked the frame rate.
         if (bannerShowing && bannerView != null) {
             call.resolve();
             return;
@@ -552,14 +558,10 @@ public class AdMobPlugin extends Plugin {
                 public void onAdLoaded() {
                     int w = bannerView.getWidth();
                     int h = bannerView.getHeight();
-                    log("Banner loaded — dimensions: " + w + "x" + h + "px"
-                        + " visibility=" + bannerView.getVisibility()
-                        + " elevation=" + bannerView.getElevation());
+                    log("Banner loaded — dimensions: " + w + "x" + h + "px");
                     if (w == 0 || h == 0) {
-                        logError("Banner has ZERO dimensions — layout not applied!"
-                            + " Forcing requestLayout()...");
+                        logError("Banner has ZERO dimensions — forcing requestLayout()");
                         bannerView.requestLayout();
-                        bannerView.invalidate();
                     }
                     try {
                         notifyListeners("admob_banner_loaded", new JSObject());
@@ -578,18 +580,8 @@ public class AdMobPlugin extends Plugin {
                 }
 
                 @Override
-                public void onAdOpened() {
-                    log("Banner ad opened");
-                }
-
-                @Override
-                public void onAdClicked() {
-                    log("Banner ad clicked");
-                }
-
-                @Override
                 public void onAdImpression() {
-                    log(">>> Banner IMPRESSION recorded — AdMob dashboard will count this <<<");
+                    log(">>> Banner IMPRESSION recorded <<<");
                 }
             });
 
@@ -614,71 +606,80 @@ public class AdMobPlugin extends Plugin {
             final int bannerHeightPx = (int) (50 * activity.getResources().getDisplayMetrics().density);
 
             // =========================================================
-            // AGGRESSIVE VISIBILITY FIX — posted to next frame so it
-            // runs AFTER Capacitor's own layout pass
+            // Z-ORDER FIX — only run ONCE per Activity lifetime.
+            //
+            // Previously this ran on every showBanner() call, which
+            // happened every time the user navigated between screens
+            // (Home → Game → LevelComplete → Game...). Each call:
+            //   - Recursively searched the entire view tree for WebView
+            //   - Set WebView background to transparent (forces redraw)
+            //   - Called requestLayout() + invalidate() on WebView
+            //
+            // This caused severe frame drops and made the game feel
+            // sluggish. Now we cache the WebView reference and skip
+            // the fix if it's already been applied.
             // =========================================================
-            contentView.post(() -> {
-                try {
-                    // 1. Find the WebView recursively (it may be nested)
-                    android.webkit.WebView webView = findWebViewInViewHierarchy(contentView);
-                    if (webView != null) {
-                        // 2. Make WebView background transparent so banner
-                        //    shows through even if there's overlap
-                        try {
-                            webView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-                        } catch (Exception ignored) {}
+            if (!zOrderFixApplied) {
+                contentView.post(() -> {
+                    try {
+                        // Cache the WebView reference (search once)
+                        if (cachedWebView == null) {
+                            cachedWebView = findWebViewInViewHierarchy(contentView);
+                        }
+                        android.webkit.WebView webView = cachedWebView;
+                        if (webView != null) {
+                            try {
+                                webView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+                            } catch (Exception ignored) {}
 
-                        // 3. Set the WebView's bottom margin to make room
-                        //    for the banner. Try FrameLayout.LayoutParams
-                        //    first, fall back to MarginLayoutParams.
-                        try {
-                            ViewGroup.LayoutParams lp = webView.getLayoutParams();
-                            if (lp instanceof FrameLayout.LayoutParams) {
-                                FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) lp;
-                                flp.bottomMargin = bannerHeightPx;
-                                flp.height = FrameLayout.LayoutParams.MATCH_PARENT;
-                                flp.gravity = Gravity.TOP;
-                                webView.setLayoutParams(flp);
-                            } else if (lp instanceof ViewGroup.MarginLayoutParams) {
-                                ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
-                                mlp.bottomMargin = bannerHeightPx;
-                                webView.setLayoutParams(mlp);
+                            try {
+                                ViewGroup.LayoutParams lp = webView.getLayoutParams();
+                                if (lp instanceof FrameLayout.LayoutParams) {
+                                    FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) lp;
+                                    flp.bottomMargin = bannerHeightPx;
+                                    flp.height = FrameLayout.LayoutParams.MATCH_PARENT;
+                                    flp.gravity = Gravity.TOP;
+                                    webView.setLayoutParams(flp);
+                                } else if (lp instanceof ViewGroup.MarginLayoutParams) {
+                                    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
+                                    mlp.bottomMargin = bannerHeightPx;
+                                    webView.setLayoutParams(mlp);
+                                }
+                            } catch (Exception e) {
+                                logError("Could not set WebView margin: " + e.getMessage());
                             }
-                        } catch (Exception e) {
-                            logError("Could not set WebView margin: " + e.getMessage());
+
+                            try {
+                                webView.setElevation(0f);
+                            } catch (Exception ignored) {}
+
+                            log("WebView cached + Z-order fix applied (one-time)");
+                        } else {
+                            logError("WebView NOT FOUND in view hierarchy — banner may be hidden");
                         }
 
-                        // 4. Push WebView to back via elevation (API 21+)
-                        try {
-                            webView.setElevation(0f);
-                        } catch (Exception ignored) {}
+                        // Bring banner to front with high elevation
+                        bannerView.setElevation(10f);
+                        bannerView.bringToFront();
+                        bannerView.setVisibility(android.view.View.VISIBLE);
+                        bannerView.requestLayout();
 
-                        log("WebView found — set transparent bg, bottomMargin="
-                            + bannerHeightPx + "px, elevation=0");
-                    } else {
-                        logError("WebView NOT FOUND in view hierarchy — banner may be hidden");
+                        zOrderFixApplied = true;
+                    } catch (Exception e) {
+                        logError("Z-order fix failed: " + e.getMessage());
                     }
-
-                    // 5. Bring banner to front with high elevation
-                    bannerView.setElevation(10f);
-                    bannerView.bringToFront();
-                    bannerView.setVisibility(android.view.View.VISIBLE);
-
-                    // 6. Force re-layout
-                    bannerView.requestLayout();
-                    bannerView.invalidate();
-                    contentView.requestLayout();
-
-                    log("Banner elevated to z=10, brought to front, forced requestLayout()");
-                } catch (Exception e) {
-                    logError("Post-layout banner fix failed: " + e.getMessage());
-                }
-            });
+                });
+            } else {
+                // Z-order fix already applied — just bring banner to front
+                bannerView.setElevation(10f);
+                bannerView.bringToFront();
+                bannerView.setVisibility(android.view.View.VISIBLE);
+            }
 
             // Load the ad
             bannerView.loadAd(new AdRequest.Builder().build());
             bannerShowing = true;
-            log("showBanner() called — AdView added, visibility fix posted to next frame");
+            log("showBanner() called — ad load initiated");
             call.resolve();
         } catch (Exception e) {
             logError("showBanner failed: " + e.getMessage());
@@ -702,30 +703,27 @@ public class AdMobPlugin extends Plugin {
             bannerShowing = false;
 
             // Restore the WebView — remove bottom margin and restore background
-            Activity activity = getActivity();
-            if (activity != null) {
-                ViewGroup contentView = (ViewGroup) activity.findViewById(android.R.id.content);
-                if (contentView != null) {
-                    android.webkit.WebView webView = findWebViewInViewHierarchy(contentView);
-                    if (webView != null) {
-                        try {
-                            webView.setBackgroundColor(android.graphics.Color.WHITE);
-                        } catch (Exception ignored) {}
-                        try {
-                            ViewGroup.LayoutParams lp = webView.getLayoutParams();
-                            if (lp instanceof FrameLayout.LayoutParams) {
-                                ((FrameLayout.LayoutParams) lp).bottomMargin = 0;
-                                webView.setLayoutParams(lp);
-                            } else if (lp instanceof ViewGroup.MarginLayoutParams) {
-                                ((ViewGroup.MarginLayoutParams) lp).bottomMargin = 0;
-                                webView.setLayoutParams(lp);
-                            }
-                            webView.setElevation(0f);
-                        } catch (Exception ignored) {}
-                        log("WebView restored — bg=white, bottomMargin=0");
+            // Use cached reference (no recursive search needed)
+            if (cachedWebView != null) {
+                try {
+                    cachedWebView.setBackgroundColor(android.graphics.Color.WHITE);
+                } catch (Exception ignored) {}
+                try {
+                    ViewGroup.LayoutParams lp = cachedWebView.getLayoutParams();
+                    if (lp instanceof FrameLayout.LayoutParams) {
+                        ((FrameLayout.LayoutParams) lp).bottomMargin = 0;
+                        cachedWebView.setLayoutParams(lp);
+                    } else if (lp instanceof ViewGroup.MarginLayoutParams) {
+                        ((ViewGroup.MarginLayoutParams) lp).bottomMargin = 0;
+                        cachedWebView.setLayoutParams(lp);
                     }
-                }
+                    cachedWebView.setElevation(0f);
+                } catch (Exception ignored) {}
+                log("WebView restored — bg=white, bottomMargin=0");
             }
+            // Reset z-order flag so next showBanner() re-applies the fix
+            zOrderFixApplied = false;
+            cachedWebView = null;
             log("Banner hidden + destroyed");
             call.resolve();
         } catch (Exception e) {
@@ -804,5 +802,8 @@ public class AdMobPlugin extends Plugin {
         rewardedAd = null;
         interstitialReady = false;
         rewardedReady = false;
+        // Reset banner state so next Activity gets a fresh Z-order fix
+        zOrderFixApplied = false;
+        cachedWebView = null;
     }
 }

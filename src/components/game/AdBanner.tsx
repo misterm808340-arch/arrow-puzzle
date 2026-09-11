@@ -49,11 +49,19 @@ export default function AdBanner() {
 
   const canShowBanner = highestCompleted >= BANNER_UNLOCK_LEVEL;
 
+  // The boolean we want bannerAllowed to be. Compute once per render —
+  // setBannerAllowed() internally guards against no-op calls (only acts
+  // when the value actually changes), so it's safe to call on every render.
+  const bannerAllowed = canShowBanner && !removeAds;
+
   // Keep AdMob banner visibility in sync with the unlock rule.
+  // Dependency array is just [bannerAllowed, isNative] — this effect
+  // only fires when the actual boolean value changes, not on every
+  // store update.
   useEffect(() => {
     if (!isNative) return;
-    setBannerAllowed(canShowBanner && !removeAds);
-  }, [isNative, canShowBanner, removeAds]);
+    setBannerAllowed(bannerAllowed);
+  }, [isNative, bannerAllowed]);
 
   // Native: banner is drawn by AdMob SDK, render nothing.
   if (isNative) return null;
